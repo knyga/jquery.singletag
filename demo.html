@@ -1,0 +1,18 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="jquery.singletag.css"/>
+    </head>
+
+    <body>
+
+        <input id="tag" type="text" placeholder="Enter tag"/>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script src="jquery.singletag.js"></script>
+        <script>
+            $('#tag').singletag({
+                availableTags: ["c++", "java", "php", "javascript", "ruby", "python", "c"]
+            });
+        </script>
+    </body>
+</html>
