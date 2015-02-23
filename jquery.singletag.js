@@ -9,29 +9,24 @@
         };
 
         AbstractSingletag.prototype.addList = function() {
-            console.log('add list');
-
             this.$list = $('<ul class="singletag-list"></ul>');
 
             this.$el.after(this.$list);
             this.updateList('');
+            this.$el.trigger('addList');
         };
 
         AbstractSingletag.prototype.showList = function() {
-            console.log('show list');
-
             this.$list.show();
+            this.$el.trigger('showList');
         };
 
         AbstractSingletag.prototype.hideList = function() {
-            console.log('hide list');
-
             this.$list.hide();
+            this.$el.trigger('hideList');
         };
 
         AbstractSingletag.prototype.updateList = function (query) {
-            console.log('update list', query);
-
             var that = this,
                 rg = new RegExp(query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), "i");
 
@@ -43,7 +38,7 @@
                 }
 
                 var $item = $('<li><a href="javascript://">'+options.availableTags[i]+'</a></li>');
-                $item.on('click', 'a', function() {
+                $item.on('click', 'li', function() {
                     that.select($(this).text());
                 });
 
@@ -53,13 +48,15 @@
 
                 this.$list.append($item);
             }
+
+            this.$el.trigger('updateList', query);
         };
 
         AbstractSingletag.prototype.select = function(value) {
-            console.log('select', value);
             this.$el.val(value);
             this.hideList();
             this.updateList(value);
+            this.$el.trigger('selectOption', value);
         }
 
         return new AbstractSingletag(options);
@@ -67,8 +64,9 @@
 
     $.fn.singletag = function(opts) {
         var options = $.extend({}, defaults, opts);
+        var events = ['selectOption', 'updateList', 'hideList', 'showList', 'addList'];
 
-        this.each(function() {
+        return this.each(function() {
             var that = this,
                 $this = $(this),
                 stag = new AbstractSingletag($.extend({}, options, {
@@ -93,6 +91,16 @@
                     stag.hideList();
                 }
             });
+
+            for(var i=0;i<events.length;i++) {
+                var ename = events[i];
+
+                if(options.hasOwnProperty(ename)) {
+                    $this.on(ename, options[ename]);
+                }
+            }
+
+            return this;
         });
     };
 
