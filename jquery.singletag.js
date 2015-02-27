@@ -5,6 +5,7 @@
         function AbstractSingletag(options) {
             this.options = options;
             this.$el = $(options.el);
+            this.currentTags = [];
             return this;
         };
 
@@ -31,14 +32,17 @@
                 rg = new RegExp(query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), "i");
 
             this.$list.html('');
+            this.currentTags = [];
 
             for(var i= 0, ia = 0;i<options.availableTags.length;i++) {
                 if(!rg.test(options.availableTags[i])) {
                     continue;
                 }
 
+                this.currentTags.push(options.availableTags[i]);
+
                 var $item = $('<li><a href="javascript://">'+options.availableTags[i]+'</a></li>');
-                $item.on('click', 'li', function() {
+                $item.on('click', function() {
                     that.select($(this).text());
                 });
 
@@ -64,7 +68,7 @@
 
     $.fn.singletag = function(opts) {
         var options = $.extend({}, defaults, opts);
-        var events = ['selectOption', 'updateList', 'hideList', 'showList', 'addList'];
+        var events = ['selectOption', 'updateList', 'hideList', 'showList', 'addList', 'newTag'];
 
         return this.each(function() {
             var that = this,
@@ -76,12 +80,17 @@
             stag.addList();
 
             $this.on('focus', function() {
-                console.log('focus');
                 stag.showList();
             });
             $this.on('keyup', function(e) {
-                console.log('keydown');
-                stag.updateList($this.val());
+                switch(e.keyCode) {
+                    case 13:
+                        if(stag.currentTags.length > 0) {
+                            stag.select(stag.currentTags[0]);
+                        }
+                        break;
+                    default: stag.updateList($this.val());
+                }
             });
 
             $(document).mouseup(function(e) {
