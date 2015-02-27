@@ -59,7 +59,8 @@
         AbstractSingletag.prototype.select = function(value) {
             this.$el.val(value);
             this.hideList();
-            this.updateList(value);
+            //this.updateList(value);
+            this.updateList('');
             this.$el.trigger('selectOption', value);
         }
 
@@ -74,8 +75,8 @@
             var that = this,
                 $this = $(this),
                 stag = new AbstractSingletag($.extend({}, options, {
-                        el: this
-                    }));
+                    el: this
+                }));
 
             stag.addList();
 
