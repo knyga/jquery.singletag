@@ -60,6 +60,15 @@
             this.$el.val(value);
             this.hideList();
             //this.updateList(value);
+
+            for (var i = 0; i < options.availableTags.length; i++) {
+                var tag = options.availableTags[i];
+
+                if (tag.toLowerCase() == value.toLowerCase()) {
+                    options.availableTags.splice(i, 1);
+                }
+            }
+
             this.updateList('');
             this.$el.trigger('selectOption', value);
         }
@@ -86,8 +95,10 @@
             $this.on('keyup', function(e) {
                 switch(e.keyCode) {
                     case 13:
-                        if(stag.currentTags.length > 0) {
+                        if(options.selectFirstOnEnter && stag.currentTags.length > 0) {
                             stag.select(stag.currentTags[0]);
+                        } else {
+                            stag.updateList($this.val());
                         }
                         break;
                     default: stag.updateList($this.val());
@@ -115,6 +126,7 @@
     };
 
     var defaults = {
+        selectFirstOnEnter: false,
         availableTags: [],
         maxItemsCount: 4
     };
